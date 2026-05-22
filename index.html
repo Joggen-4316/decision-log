@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="决策日志">
 <title>决策日志</title>
 <style>
   :root{
@@ -21,46 +23,26 @@
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     min-height:100vh;
   }
-  .wrap{max-width:560px;margin:0 auto;padding:28px 20px 120px;}
-  header{margin-bottom:18px;}
+  .wrap{max-width:560px;margin:0 auto;padding:24px 20px 120px;}
+  header{margin-bottom:16px;}
   .title{font-size:15px;letter-spacing:.18em;color:var(--ink-soft);font-weight:600;text-transform:uppercase;margin:0;}
   .subtitle{font-size:13px;color:var(--ink-faint);margin:4px 0 0;letter-spacing:.02em;}
 
-  /* tabs */
   .tabs{display:flex;gap:6px;margin:16px 0 18px;background:rgba(35,33,28,.04);padding:4px;border-radius:12px;}
-  .tabs button{
-    flex:1;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;
-    color:var(--ink-faint);padding:9px 0;border-radius:9px;cursor:pointer;letter-spacing:.04em;transition:all .15s;
-  }
+  .tabs button{flex:1;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink-faint);padding:9px 0;border-radius:9px;cursor:pointer;letter-spacing:.04em;transition:all .15s;}
   .tabs button.on{background:var(--paper);color:var(--ink);box-shadow:var(--shadow);}
 
-  .view{display:none;}
-  .view.on{display:block;}
+  .view{display:none;} .view.on{display:block;}
 
-  /* capture */
+  /* capture — 极简：只有一个大输入框 + 存下 */
   .capture{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 18px 16px;box-shadow:var(--shadow);margin-bottom:14px;}
-  .capture-label{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+  .capture-label{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-soft);}
-  textarea.seed{width:100%;border:none;background:transparent;resize:none;font-family:inherit;font-size:18px;line-height:1.5;color:var(--ink);outline:none;min-height:58px;padding:0;}
+  textarea.seed{width:100%;border:none;background:transparent;resize:none;font-family:inherit;font-size:18px;line-height:1.6;color:var(--ink);outline:none;min-height:120px;padding:0;}
   textarea.seed::placeholder{color:var(--ink-faint);}
-  .pick{margin-top:14px;}
-  .pick-label{font-size:11.5px;color:var(--ink-faint);margin-bottom:7px;letter-spacing:.04em;}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;}
-  .chip{
-    border:1px solid var(--line);background:#fff;font-family:inherit;font-size:12.5px;
-    color:var(--ink-soft);padding:6px 12px;border-radius:20px;cursor:pointer;transition:all .12s;
-  }
-  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent);}
-  .chip.size.on{background:var(--ink);border-color:var(--ink);}
-  .opts{margin-top:14px;}
-  .opts input{width:100%;border:none;border-bottom:1px dashed var(--line);background:transparent;font-family:inherit;font-size:14px;color:var(--ink-soft);outline:none;padding:7px 0;}
-  .opts input::placeholder{color:var(--ink-faint);}
-  .lean{margin-top:10px;}
-  .lean input{width:100%;border:none;background:rgba(154,91,52,.06);border-radius:9px;font-family:inherit;font-size:14px;color:var(--ink);outline:none;padding:9px 11px;}
-  .lean input::placeholder{color:var(--ink-faint);}
-  .capture-foot{display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
-  .hint{font-size:11.5px;color:var(--ink-faint);max-width:60%;line-height:1.4;}
-  button.save{border:none;background:var(--ink);color:var(--paper);font-family:inherit;font-size:14px;font-weight:600;letter-spacing:.05em;padding:10px 22px;border-radius:10px;cursor:pointer;transition:transform .12s,opacity .12s;}
+  .capture-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+  .hint{font-size:11.5px;color:var(--ink-faint);max-width:62%;line-height:1.5;}
+  button.save{border:none;background:var(--ink);color:var(--paper);font-family:inherit;font-size:14px;font-weight:600;letter-spacing:.05em;padding:11px 26px;border-radius:10px;cursor:pointer;transition:transform .12s,opacity .12s;}
   button.save:active{transform:scale(.96);}
   button.save:disabled{opacity:.35;cursor:default;}
 
@@ -75,52 +57,58 @@
   .empty{text-align:center;color:var(--ink-faint);font-size:14px;padding:46px 20px;border:1px dashed var(--line);border-radius:14px;line-height:1.8;}
 
   .item{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:11px;box-shadow:var(--shadow);}
-  .item .when{font-size:11.5px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:6px;display:flex;gap:8px;align-items:center;}
-  .item .seed-text{font-size:16px;color:var(--ink);line-height:1.5;}
+  .item .when{font-size:11.5px;color:var(--ink-faint);letter-spacing:.03em;margin-bottom:6px;}
+  .item .seed-text{font-size:16px;color:var(--ink);line-height:1.6;white-space:pre-wrap;}
   .item .meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
   .tag{font-size:11px;padding:3px 9px;border-radius:20px;letter-spacing:.02em;}
   .tag.pending{background:rgba(201,138,92,.16);color:var(--accent);}
   .tag.done{background:rgba(92,122,82,.16);color:var(--good);}
   .tag.cat{background:rgba(35,33,28,.06);color:var(--ink-soft);}
-  .tag.size-s{background:rgba(168,163,151,.18);color:var(--ink-soft);}
-  .tag.size-m{background:rgba(201,138,92,.16);color:var(--accent);}
-  .tag.size-l{background:rgba(154,91,52,.18);color:var(--accent);font-weight:600;}
+  .tag.size-小{background:rgba(168,163,151,.18);color:var(--ink-soft);}
+  .tag.size-中{background:rgba(201,138,92,.16);color:var(--accent);}
+  .tag.size-大{background:rgba(154,91,52,.18);color:var(--accent);font-weight:600;}
   .item .actions{display:flex;gap:16px;margin-top:11px;}
   .item .actions button{border:none;background:none;font-family:inherit;font-size:13px;color:var(--accent);cursor:pointer;padding:0;letter-spacing:.03em;}
   .item .actions button.del{color:var(--ink-faint);margin-left:auto;}
   .review-block{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
   .review-block .qa{margin-bottom:8px;}
   .review-block .q{font-size:11.5px;color:var(--ink-faint);}
-  .review-block .a{font-size:14px;color:var(--ink-soft);line-height:1.5;}
-  .review-block .principle{background:rgba(154,91,52,.07);border-left:2px solid var(--accent-soft);padding:8px 11px;border-radius:0 8px 8px 0;margin-top:4px;}
+  .review-block .a{font-size:14px;color:var(--ink-soft);line-height:1.55;white-space:pre-wrap;}
+  .review-block .result{background:rgba(92,122,82,.08);border-left:2px solid var(--good);padding:8px 11px;border-radius:0 8px 8px 0;}
+  .review-block .result .a{color:#46603d;}
+  .review-block .principle{background:rgba(154,91,52,.07);border-left:2px solid var(--accent-soft);padding:8px 11px;border-radius:0 8px 8px 0;}
   .review-block .principle .a{color:var(--accent);}
 
-  /* principle library */
   .pintro{font-size:13px;color:var(--ink-soft);line-height:1.7;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px;}
   .pcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px 16px 14px;margin-bottom:11px;box-shadow:var(--shadow);position:relative;}
   .pcard .pnum{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.1em;margin-bottom:6px;}
-  .pcard .ptext{font-size:15.5px;color:var(--ink);line-height:1.55;}
+  .pcard .ptext{font-size:15.5px;color:var(--ink);line-height:1.55;white-space:pre-wrap;}
   .pcard .pfrom{font-size:11px;color:var(--ink-faint);margin-top:8px;}
   .pcard .pdel{position:absolute;top:13px;right:14px;border:none;background:none;color:var(--ink-faint);font-size:12px;cursor:pointer;}
 
-  /* modal */
   .overlay{position:fixed;inset:0;background:rgba(35,33,28,.34);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
   .overlay.show{display:flex;}
-  .sheet{background:var(--paper);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(35,33,28,.2);animation:rise .26s cubic-bezier(.2,.8,.2,1);}
+  .sheet{background:var(--paper);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(35,33,28,.2);animation:rise .26s cubic-bezier(.2,.8,.2,1);}
   @keyframes rise{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
   .sheet h3{font-size:16px;margin:0 0 4px;color:var(--ink);}
-  .sheet .sub{font-size:12.5px;color:var(--ink-faint);margin:0 0 18px;}
+  .sheet .sub{font-size:12.5px;color:var(--ink-faint);margin:0 0 18px;line-height:1.5;white-space:pre-wrap;}
   .field{margin-bottom:16px;}
   .field label{display:block;font-size:13px;color:var(--ink);font-weight:600;margin-bottom:6px;}
   .field .desc{font-size:11.5px;color:var(--ink-faint);font-weight:400;display:block;margin-bottom:7px;line-height:1.5;}
-  .field textarea,.field input{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;font-family:inherit;font-size:14.5px;color:var(--ink);outline:none;padding:10px 12px;resize:none;}
+  .field textarea,.field input{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;font-family:inherit;font-size:14.5px;color:var(--ink);outline:none;padding:10px 12px;resize:none;line-height:1.55;}
   .field textarea:focus,.field input:focus{border-color:var(--accent-soft);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{border:1px solid var(--line);background:#fff;font-family:inherit;font-size:12.5px;color:var(--ink-soft);padding:6px 12px;border-radius:20px;cursor:pointer;transition:all .12s;}
+  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .chip.size.on{background:var(--ink);border-color:var(--ink);}
   .seg{display:flex;gap:7px;}
   .seg button{flex:1;border:1px solid var(--line);background:#fff;font-family:inherit;font-size:13px;color:var(--ink-soft);padding:9px 0;border-radius:9px;cursor:pointer;transition:all .12s;}
   .seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
   .score-row{display:flex;gap:6px;}
   .score-row button{flex:1;border:1px solid var(--line);background:#fff;font-family:inherit;font-size:15px;color:var(--ink-soft);padding:9px 0;border-radius:9px;cursor:pointer;font-weight:600;}
   .score-row button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .result-field{background:rgba(92,122,82,.07);border-radius:12px;padding:13px 14px;margin-bottom:16px;}
+  .result-field label{color:#46603d;}
   .principle-field{background:rgba(154,91,52,.06);border-radius:12px;padding:13px 14px;margin-bottom:16px;}
   .principle-field label{color:var(--accent);}
   .sheet-foot{display:flex;gap:10px;margin-top:8px;}
@@ -131,7 +119,6 @@
   footer{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:30px;line-height:1.7;}
   .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);font-size:13px;padding:10px 20px;border-radius:24px;opacity:0;transition:all .3s;z-index:80;pointer-events:none;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .tip{font-size:11.5px;color:var(--ink-faint);text-align:center;margin:14px 2px 0;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -146,39 +133,15 @@
     <button data-view="principles">我的原则</button>
   </div>
 
-  <!-- ============ 记录 view ============ -->
+  <!-- ====== 记录 ====== -->
   <div class="view on" id="view-log">
     <div class="capture">
-      <div class="capture-label"><span class="dot"></span>此刻 · 趁热接住它</div>
-      <textarea class="seed" id="seedInput" placeholder="我刚面临一个决策是……（说一句话就够，可用键盘上的麦克风）" rows="2"></textarea>
+      <div class="capture-label"><span class="dot"></span>此刻 · 趁热说出来</div>
+      <textarea class="seed" id="seedInput" placeholder="把这件事说出来——我遇到的问题是什么、我打算怎么做、为什么这么定，甚至已经知道的结果，想说多少说多少。
 
-      <div class="pick">
-        <div class="pick-label">这是个多大的决策？（点一下）</div>
-        <div class="chips" id="sizeChips">
-          <span class="chip size" data-size="小">小决策</span>
-          <span class="chip size" data-size="中">中决策</span>
-          <span class="chip size" data-size="大">大决策</span>
-        </div>
-      </div>
-
-      <div class="pick">
-        <div class="pick-label">哪一类？（点一下，攒久了能看出你哪类最弱）</div>
-        <div class="chips" id="catChips">
-          <span class="chip cat-chip" data-cat="工作">工作</span>
-          <span class="chip cat-chip" data-cat="用人">用人</span>
-          <span class="chip cat-chip" data-cat="投资">投资</span>
-          <span class="chip cat-chip" data-cat="家庭">家庭</span>
-          <span class="chip cat-chip" data-cat="关系">关系</span>
-          <span class="chip cat-chip" data-cat="消费">消费</span>
-          <span class="chip cat-chip" data-cat="时间分配">时间分配</span>
-        </div>
-      </div>
-
-      <div class="opts"><input id="optInput" type="text" placeholder="我有哪些选项？（可选）"></div>
-      <div class="lean"><input id="leanInput" type="text" placeholder="我现在倾向于……先填直觉答案（可选）"></div>
-
+（点这里，再按键盘上的麦克风键，直接说）"></textarea>
       <div class="capture-foot">
-        <span class="hint">复盘晚点做，现在先存下来。大决策再走完整复盘。</span>
+        <span class="hint">现在只管记。分类、复盘、打分这些，都留到有空时再补。</span>
         <button class="save" id="saveBtn" disabled>存下</button>
       </div>
     </div>
@@ -193,12 +156,12 @@
     <div id="list"></div>
   </div>
 
-  <!-- ============ 原则库 view ============ -->
+  <!-- ====== 原则库 ====== -->
   <div class="view" id="view-principles">
     <div class="pintro">
       这是这个工具<b>最值钱的一页</b>。<br>
       日志只是过程，沉淀出你自己的决策原则才是结果。<br>
-      每次复盘一个大决策时，问自己一句：这次能不能总结出一条原则？<br>
+      复盘时若有所悟，就记下一条你以后能反复用的话。<br>
       攒够十几条，这就是<b>只属于你的决策模型</b>。
     </div>
     <div id="principleList"></div>
@@ -206,47 +169,67 @@
 
   <footer>
     数据只存在你这台设备的浏览器里 · 不上传任何地方<br>
-    建议「添加到主屏幕」，当成一个 App 用
+    已添加到主屏幕 · 点图标即可快速记录
   </footer>
 </div>
 
 <!-- 复盘弹层 -->
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet">
-    <h3>复盘这个决策</h3>
+    <h3>复盘 / 补充</h3>
     <p class="sub" id="sheetSeed"></p>
 
     <div class="field">
-      <label>我放弃的选项里，最好的那个是什么？
-        <span class="desc">这才是真正的代价 —— 机会成本。不是你花掉的钱，是你放弃的可能性。</span>
+      <label>这是哪一类、多大的决策？
+        <span class="desc">现在有空了，给它归个类。攒久了能看出你在哪类决策上最弱。</span>
       </label>
-      <textarea id="rOpp" rows="2" placeholder="如果不选现在这个，我本来能得到的最好结果是……"></textarea>
-    </div>
-    <div class="field">
-      <label>我是怎么做这个决策的？
-        <span class="desc">是列了选项、估了概率和收益再选？还是凭感觉、凭冲动？诚实点。</span>
-      </label>
-      <textarea id="rHow" rows="2" placeholder="我的决策过程是……"></textarea>
-    </div>
-    <div class="field">
-      <label>这是个可逆决策，还是不可逆？
-        <span class="desc">可逆的快点定，不可逆的慢慢想 —— 这两类该用完全不同的态度。</span>
-      </label>
-      <div class="seg" id="segReversible">
-        <button data-v="可逆">可逆 · 能回头</button>
-        <button data-v="半可逆">半可逆</button>
-        <button data-v="不可逆">不可逆 · 没退路</button>
+      <div class="pick-label" style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">重要性</div>
+      <div class="chips" id="sizeChips" style="margin-bottom:10px;">
+        <span class="chip size" data-size="小">小决策</span>
+        <span class="chip size" data-size="中">中决策</span>
+        <span class="chip size" data-size="大">大决策</span>
+      </div>
+      <div class="pick-label" style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">类型</div>
+      <div class="chips" id="catChips">
+        <span class="chip cat-chip" data-cat="工作">工作</span>
+        <span class="chip cat-chip" data-cat="用人">用人</span>
+        <span class="chip cat-chip" data-cat="投资">投资</span>
+        <span class="chip cat-chip" data-cat="家庭">家庭</span>
+        <span class="chip cat-chip" data-cat="关系">关系</span>
+        <span class="chip cat-chip" data-cat="消费">消费</span>
+        <span class="chip cat-chip" data-cat="时间分配">时间分配</span>
       </div>
     </div>
+
     <div class="field">
-      <label>最坏情况是什么？我能承受吗？
-        <span class="desc">想清楚最坏能不能扛，比想最好的结果重要得多。</span>
+      <label>我当时的判断依据是什么？
+        <span class="desc">我为什么这么定？依据是数据、经验、还是直觉？诚实点。</span>
       </label>
-      <textarea id="rWorst" rows="2" placeholder="最坏会……我（能 / 不能）承受，因为……"></textarea>
+      <textarea id="rHow" rows="2" placeholder="我这么决定，是基于……"></textarea>
     </div>
+
     <div class="field">
-      <label>给这个决策的「过程质量」打分
-        <span class="desc">注意：打的不是结果好不好，是过程做得对不对。好过程也可能撞上坏运气。</span>
+      <label>我否决了哪些其他做法？为什么？
+        <span class="desc">放弃的选项里最好的那个，才是真正的代价 —— 机会成本。</span>
+      </label>
+      <textarea id="rOpp" rows="2" placeholder="我本来还可以……但没选，因为……"></textarea>
+    </div>
+
+    <div class="field">
+      <label>这个决策可逆吗？最坏能不能扛？
+        <span class="desc">可逆的快点定，不可逆的慢慢想。最坏能扛，就敢做。</span>
+      </label>
+      <div class="seg" id="segReversible" style="margin-bottom:8px;">
+        <button data-v="可逆">可逆</button>
+        <button data-v="半可逆">半可逆</button>
+        <button data-v="不可逆">不可逆</button>
+      </div>
+      <textarea id="rWorst" rows="2" placeholder="最坏情况是……我（能/不能）承受"></textarea>
+    </div>
+
+    <div class="field">
+      <label>「过程质量」打分
+        <span class="desc">打的不是结果好不好，是过程对不对。好过程也可能撞上坏运气。</span>
       </label>
       <div class="score-row" id="scoreRow">
         <button data-s="1">1</button><button data-s="2">2</button>
@@ -254,8 +237,15 @@
       </div>
     </div>
 
+    <div class="result-field">
+      <label>结果如何？
+        <span class="desc">过几天/几周回来填。这一栏让「决策 → 结果」形成闭环，是可追溯成长的关键。</span>
+      </label>
+      <textarea id="rResult" rows="2" placeholder="后来的结果是……（现在不知道也没关系，以后回来补）"></textarea>
+    </div>
+
     <div class="principle-field">
-      <label>这次能沉淀出一条「决策原则」吗？
+      <label>能沉淀出一条「决策原则」吗？
         <span class="desc">可选，但这是最有价值的一步。一句你以后能反复用的话。<br>比如：凡只因为「不想麻烦」而选某方案时，先警惕这是逃避成本。</span>
       </label>
       <textarea id="rPrinciple" rows="2" placeholder="我学到的一条原则是……（写了会进「我的原则」）"></textarea>
@@ -263,7 +253,7 @@
 
     <div class="sheet-foot">
       <button class="btn-cancel" id="cancelReview">先不弄</button>
-      <button class="btn-save" id="submitReview">保存复盘</button>
+      <button class="btn-save" id="submitReview">保存</button>
     </div>
   </div>
 </div>
@@ -271,11 +261,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY='decision_log_v1';
-const PKEY='decision_principles_v1';
+const KEY='decision_log_v1', PKEY='decision_principles_v1';
 let data=load(KEY), principles=load(PKEY);
-let reviewingId=null, segVal='', scoreVal=0;
-let pickSize='', pickCat='';
+let reviewingId=null, segVal='', scoreVal=0, pickSize='', pickCat='';
 
 function load(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):[];}catch(e){return[];}}
 function saveAll(){try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(PKEY,JSON.stringify(principles));}catch(e){toast('保存失败，存储可能已满');}}
@@ -285,32 +273,17 @@ function dayKey(ts){const d=new Date(ts);return d.getFullYear()+'-'+d.getMonth()
 function streak(){if(!data.length)return 0;const days=new Set(data.map(d=>dayKey(d.ts)));let s=0;const cur=new Date();for(;;){const k=cur.getFullYear()+'-'+cur.getMonth()+'-'+cur.getDate();if(days.has(k)){s++;cur.setDate(cur.getDate()-1);}else break;}if(s===0){const yk=new Date(Date.now()-86400000);const k=yk.getFullYear()+'-'+yk.getMonth()+'-'+yk.getDate();if(days.has(k)){let c2=yk;for(;;){const kk=c2.getFullYear()+'-'+c2.getMonth()+'-'+c2.getDate();if(days.has(kk)){s++;c2.setDate(c2.getDate()-1);}else break;}}}return s;}
 
 const seedInput=document.getElementById('seedInput');
-const optInput=document.getElementById('optInput');
-const leanInput=document.getElementById('leanInput');
 const saveBtn=document.getElementById('saveBtn');
-
-seedInput.addEventListener('input',()=>{saveBtn.disabled=seedInput.value.trim()==='';seedInput.style.height='auto';seedInput.style.height=seedInput.scrollHeight+'px';});
-
-document.querySelectorAll('#sizeChips .chip').forEach(c=>c.addEventListener('click',()=>{
-  const v=c.dataset.size;pickSize=(pickSize===v)?'':v;
-  document.querySelectorAll('#sizeChips .chip').forEach(x=>x.classList.toggle('on',x.dataset.size===pickSize));
-}));
-document.querySelectorAll('#catChips .chip').forEach(c=>c.addEventListener('click',()=>{
-  const v=c.dataset.cat;pickCat=(pickCat===v)?'':v;
-  document.querySelectorAll('#catChips .chip').forEach(x=>x.classList.toggle('on',x.dataset.cat===pickCat));
-}));
+seedInput.addEventListener('input',()=>{saveBtn.disabled=seedInput.value.trim()==='';seedInput.style.height='auto';seedInput.style.height=Math.max(120,seedInput.scrollHeight)+'px';});
 
 saveBtn.addEventListener('click',()=>{
   const txt=seedInput.value.trim();if(!txt)return;
-  data.unshift({id:uid(),ts:Date.now(),seed:txt,size:pickSize,cat:pickCat,options:optInput.value.trim(),lean:leanInput.value.trim(),reviewed:false,review:null});
+  data.unshift({id:uid(),ts:Date.now(),seed:txt,size:'',cat:'',reviewed:false,review:null});
   saveAll();render();
-  seedInput.value='';optInput.value='';leanInput.value='';pickSize='';pickCat='';
-  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
-  seedInput.style.height='auto';saveBtn.disabled=true;
-  toast('接住了 · 有空再回来复盘');
+  seedInput.value='';seedInput.style.height='120px';saveBtn.disabled=true;seedInput.blur();
+  toast('记下了 · 有空再回来复盘');
 });
 
-// tabs
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
@@ -321,34 +294,42 @@ function openReview(id){
   reviewingId=id;const item=data.find(d=>d.id===id);
   document.getElementById('sheetSeed').textContent=item.seed;
   const r=item.review||{};
-  document.getElementById('rOpp').value=r.opp||'';
   document.getElementById('rHow').value=r.how||'';
+  document.getElementById('rOpp').value=r.opp||'';
   document.getElementById('rWorst').value=r.worst||'';
+  document.getElementById('rResult').value=r.result||'';
   document.getElementById('rPrinciple').value='';
-  segVal=r.reversible||'';scoreVal=r.score||0;
+  segVal=r.reversible||'';scoreVal=r.score||0;pickSize=item.size||'';pickCat=item.cat||'';
+  document.querySelectorAll('#sizeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.size===pickSize));
+  document.querySelectorAll('#catChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.cat===pickCat));
   document.querySelectorAll('#segReversible button').forEach(b=>b.classList.toggle('on',b.dataset.v===segVal));
   document.querySelectorAll('#scoreRow button').forEach(b=>b.classList.toggle('on',+b.dataset.s===scoreVal));
   document.getElementById('overlay').classList.add('show');
 }
 function closeReview(){document.getElementById('overlay').classList.remove('show');reviewingId=null;}
+
+document.querySelectorAll('#sizeChips .chip').forEach(c=>c.addEventListener('click',()=>{const v=c.dataset.size;pickSize=(pickSize===v)?'':v;document.querySelectorAll('#sizeChips .chip').forEach(x=>x.classList.toggle('on',x.dataset.size===pickSize));}));
+document.querySelectorAll('#catChips .chip').forEach(c=>c.addEventListener('click',()=>{const v=c.dataset.cat;pickCat=(pickCat===v)?'':v;document.querySelectorAll('#catChips .chip').forEach(x=>x.classList.toggle('on',x.dataset.cat===pickCat));}));
 document.querySelectorAll('#segReversible button').forEach(b=>b.addEventListener('click',()=>{segVal=b.dataset.v;document.querySelectorAll('#segReversible button').forEach(x=>x.classList.toggle('on',x===b));}));
 document.querySelectorAll('#scoreRow button').forEach(b=>b.addEventListener('click',()=>{scoreVal=+b.dataset.s;document.querySelectorAll('#scoreRow button').forEach(x=>x.classList.toggle('on',x===b));}));
 document.getElementById('cancelReview').addEventListener('click',closeReview);
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeReview();});
+
 document.getElementById('submitReview').addEventListener('click',()=>{
   const item=data.find(d=>d.id===reviewingId);if(!item)return;
   const pTxt=document.getElementById('rPrinciple').value.trim();
-  item.review={opp:document.getElementById('rOpp').value.trim(),how:document.getElementById('rHow').value.trim(),worst:document.getElementById('rWorst').value.trim(),reversible:segVal,score:scoreVal,principle:pTxt};
-  item.reviewed=!!(item.review.opp||item.review.how||item.review.worst||segVal||scoreVal||pTxt);
-  if(pTxt){principles.unshift({id:uid(),ts:Date.now(),text:pTxt,from:item.seed,cat:item.cat});}
+  item.size=pickSize;item.cat=pickCat;
+  item.review={how:document.getElementById('rHow').value.trim(),opp:document.getElementById('rOpp').value.trim(),worst:document.getElementById('rWorst').value.trim(),result:document.getElementById('rResult').value.trim(),reversible:segVal,score:scoreVal,principle:pTxt};
+  const r=item.review;
+  item.reviewed=!!(r.how||r.opp||r.worst||r.result||segVal||scoreVal||pTxt||pickSize||pickCat);
+  if(pTxt){principles.unshift({id:uid(),ts:Date.now(),text:pTxt,from:item.seed.slice(0,40),cat:pickCat});}
   saveAll();render();closeReview();
-  toast(pTxt?'复盘已存 · 一条原则进库了':'复盘已存 · 下次遇到类似的记得用上');
+  toast(pTxt?'已保存 · 一条原则进库了':'已保存');
 });
 
 function del(id){if(!confirm('删除这条记录？删了找不回来。'))return;data=data.filter(d=>d.id!==id);saveAll();render();}
 function delP(id){if(!confirm('删除这条原则？'))return;principles=principles.filter(p=>p.id!==id);saveAll();render();}
-
-function sizeTag(s){if(!s)return '';const map={'小':'size-s','中':'size-m','大':'size-l'};return `<span class="tag ${map[s]}">${s}决策</span>`;}
+function sizeTag(s){return s?`<span class="tag size-${s}">${s}决策</span>`:'';}
 
 function render(){
   document.getElementById('statTotal').textContent=data.length;
@@ -357,27 +338,25 @@ function render(){
   const list=document.getElementById('list');
   document.getElementById('listCount').textContent=data.length?data.length+' 条':'';
   if(!data.length){
-    list.innerHTML='<div class="empty">还没有记录。<br>下次你要做选择时 —— 不管大小 ——<br>先来这里花 3 秒接住它。</div>';
+    list.innerHTML='<div class="empty">还没有记录。<br>下次你要做决策时 —— 不管大小 ——<br>点开就说，把它接住。</div>';
   }else{
     list.innerHTML=data.map(d=>{
       const cat=d.cat?`<span class="tag cat">${esc(d.cat)}</span>`:'';
-      const opts=d.options?`<span class="tag cat">选项: ${esc(d.options)}</span>`:'';
-      const lean=d.lean?`<span class="tag cat">倾向: ${esc(d.lean)}</span>`:'';
       const status=d.reviewed?`<span class="tag done">已复盘${d.review&&d.review.score?' · 过程 '+d.review.score+'/5':''}</span>`:`<span class="tag pending">待复盘</span>`;
       let reviewHtml='';
       if(d.reviewed&&d.review){
         const r=d.review;const rows=[];
-        if(r.opp)rows.push(`<div class="qa"><div class="q">放弃的最好选项（机会成本）</div><div class="a">${esc(r.opp)}</div></div>`);
-        if(r.how)rows.push(`<div class="qa"><div class="q">决策过程</div><div class="a">${esc(r.how)}</div></div>`);
+        if(r.how)rows.push(`<div class="qa"><div class="q">判断依据</div><div class="a">${esc(r.how)}</div></div>`);
+        if(r.opp)rows.push(`<div class="qa"><div class="q">否决的其他做法（机会成本）</div><div class="a">${esc(r.opp)}</div></div>`);
         if(r.reversible)rows.push(`<div class="qa"><div class="q">可逆性</div><div class="a">${esc(r.reversible)}</div></div>`);
         if(r.worst)rows.push(`<div class="qa"><div class="q">最坏情况</div><div class="a">${esc(r.worst)}</div></div>`);
+        if(r.result)rows.push(`<div class="qa result"><div class="q">结果</div><div class="a">${esc(r.result)}</div></div>`);
         if(r.principle)rows.push(`<div class="qa principle"><div class="q">沉淀的原则</div><div class="a">${esc(r.principle)}</div></div>`);
         if(rows.length)reviewHtml=`<div class="review-block">${rows.join('')}</div>`;
       }
-      return `<div class="item"><div class="when">${fmt(d.ts)}</div><div class="seed-text">${esc(d.seed)}</div><div class="meta-row">${sizeTag(d.size)}${status}${cat}${opts}${lean}</div>${reviewHtml}<div class="actions"><button onclick="openReview('${d.id}')">${d.reviewed?'修改复盘':'去复盘 →'}</button><button class="del" onclick="del('${d.id}')">删除</button></div></div>`;
+      return `<div class="item"><div class="when">${fmt(d.ts)}</div><div class="seed-text">${esc(d.seed)}</div><div class="meta-row">${sizeTag(d.size)}${status}${cat}</div>${reviewHtml}<div class="actions"><button onclick="openReview('${d.id}')">${d.reviewed?'修改复盘':'去复盘 →'}</button><button class="del" onclick="del('${d.id}')">删除</button></div></div>`;
     }).join('');
   }
-  // principles
   const pl=document.getElementById('principleList');
   if(!principles.length){
     pl.innerHTML='<div class="empty">还没有沉淀任何原则。<br>去复盘一个决策时，<br>试着总结出一条你以后能反复用的话。</div>';
@@ -390,6 +369,9 @@ let toastTimer;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);}
 window.openReview=openReview;window.del=del;window.delP=delP;
 render();
+
+// 从主屏幕快捷方式打开时（带 #new），自动聚焦输入框，方便直接按麦克风
+if(location.hash==='#new'){setTimeout(()=>{seedInput.focus();},300);}
 </script>
 </body>
 </html>
